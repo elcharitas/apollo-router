@@ -98,18 +98,14 @@ fn can_compose_valid_subgraphs() {
     )
     .unwrap();
 
-    let result = Supergraph::compose(vec![&s1, &s2]);
-    assert!(
-        result.is_ok(),
-        "Composition should succeed for valid subgraphs"
-    );
-
-    let supergraph = result.unwrap();
-    let schema = supergraph.schema.schema();
-
-    assert!(schema.types.contains_key("User"));
-    assert!(schema.types.contains_key("Product"));
-    assert!(schema.types.contains_key("Query"));
+    let supergraph = Supergraph::compose(vec![&s1, &s2]).unwrap();
+    insta::assert_snapshot!(print_sdl(supergraph.schema.schema()));
+    insta::assert_snapshot!(print_sdl(
+        supergraph
+            .to_api_schema(Default::default())
+            .unwrap()
+            .schema()
+    ));
 }
 
 #[test]
