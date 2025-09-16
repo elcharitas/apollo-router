@@ -69,7 +69,6 @@ pub fn pre_merge_validations(
 ) -> Result<(), Vec<CompositionError>> {
     // Pre-merge validations - check for basic composition requirements
     // this includes checking for any conflict between subgraphs that would prevent successful merging
-
     if validated_subgraphs.is_empty() {
         return Err(vec![CompositionError::InvalidGraphQL {
             message: "Cannot compose an empty list of subgraphs".to_string(),
@@ -123,8 +122,7 @@ fn merge_subgraphs(
 
 fn post_merge_validations(supergraph: &Supergraph<Merged>) -> Result<(), Vec<CompositionError>> {
     // Post-merge validations - validate the merged supergraph
-    // Based on Node.js implementation, this includes checking the final schema
-
+    // Based on Node.js implementation, this includes checking the final schema below
     let schema = supergraph.schema();
 
     // Validate that we have a query root type (required by GraphQL spec)

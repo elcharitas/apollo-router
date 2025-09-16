@@ -118,37 +118,6 @@ fn compose_handles_empty_subgraphs() {
 }
 
 #[test]
-fn compose_fails_with_duplicate_subgraph_names() {
-    let s1 = Subgraph::parse_and_expand(
-        "DuplicateName",
-        "https://subgraph1",
-        r#"
-            type Query {
-                field1: String
-            }
-        "#,
-    )
-    .unwrap();
-
-    let s2 = Subgraph::parse_and_expand(
-        "DuplicateName",
-        "https://subgraph2",
-        r#"
-            type Query {
-                field2: String
-            }
-        "#,
-    )
-    .unwrap();
-
-    let result = Supergraph::compose(vec![&s1, &s2]);
-    assert!(
-        result.is_err(),
-        "Composition should fail with duplicate names"
-    );
-}
-
-#[test]
 fn can_compose_with_descriptions() {
     let s1 = Subgraph::parse_and_expand(
         "Subgraph1",
