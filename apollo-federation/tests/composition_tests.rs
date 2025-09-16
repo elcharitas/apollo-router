@@ -287,3 +287,50 @@ fn compose_removes_federation_directives() {
             .schema()
     ));
 }
+
+#[test]
+fn compose_fails_on_pre_merge_validation_errors() {
+    // Test that composition fails during pre-merge validation due to duplicate subgraph names
+    let s1 = Subgraph::parse_and_expand(
+        "SubgraphA",
+        "https://subgraph1",
+        r#"
+            type Query {
+                user(id: ID!): User
+            }
+
+            type User @key(fields: "id") {
+                id: ID!
+                name: String!
+            }
+        "#,
+    )
+    .unwrap();
+
+    let s2 = Subgraph::parse_and_expand(
+        "SubgraphA",
+        "https://subgraph2",
+        r#"
+            type Query {
+                profile(id: ID!): Profile
+            }
+
+            type Profile @key(fields: "id") {
+                id: ID!
+                email: String!
+            }
+        "#,
+    )
+    .unwrap();
+
+    // Composition should fail due to pre-merge validation errors (duplicate names)
+    let result = Supergraph::compose(vec![&s1, &s2]);
+
+    assert!(
+        result.is_err(),
+        "Composition should fail when subgraphs have duplicate names"
+    );
+
+    // Use insta to snapshot the error for verification
+    insta::assert_debug_snapshot!(result);
+}
